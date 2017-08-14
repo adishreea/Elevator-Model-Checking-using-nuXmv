@@ -1,0 +1,74 @@
+MODULE main
+  VAR
+    car : {1, 2, 3};
+    req : {1, 2, 3};
+    carstate : {stop, moving};
+    cardoor : {closed, open};
+    shdoor1 : {closed, open};
+    shdoor2 : {closed, open};
+    shdoor3 : {closed, open};
+    
+  TRANS
+    (((req=1) & car=1) -> (car=1 & carstate=stop & cardoor=open & shdoor1=open & shdoor2=closed & shdoor3=closed)) &
+    (((req=2) & car=2) -> (car=2 & carstate=stop & cardoor=open & shdoor2=open & shdoor3=closed & shdoor1=closed)) &
+    (((req=3) & car=3) -> (car=3 & carstate=stop & cardoor=open & shdoor3=open & shdoor1=closed & shdoor2=closed)) &
+    ((req=2 & car=1) -> (req=0 & car=2 & carstate=moving & cardoor=closed & shdoor1=closed & shdoor2=closed & shdoor3=closed)) &
+    ((req=3 & car=1) -> (req=0 & car=3 & carstate=moving & cardoor=closed & shdoor1=closed & shdoor2=closed & shdoor3=closed)) &
+    ((req=3 & car=2) -> (req=0 & car=3 & carstate=moving & cardoor=closed & shdoor1=closed & shdoor2=closed & shdoor3=closed)) &
+    ((req=1 & car=2) -> (req=0 & car=1 & carstate=moving & cardoor=closed & shdoor1=closed & shdoor2=closed & shdoor3=closed)) & 
+    ((req=1 & car=3) -> (req=0 & car=1 & carstate=moving & cardoor=closed & shdoor1=closed & shdoor2=closed & shdoor3=closed)) &
+    ((req=2 & car=3) -> (req=0 & car=2 & carstate=moving & cardoor=closed & shdoor1=closed & shdoor2=closed & shdoor3=closed));
+
+  INIT
+    (shdoor1=closed & shdoor2=closed & shdoor3=closed & cardoor=closed & carstate=stop & car=1 & req=0);
+
+LTLSPEC
+  G ((car!=1) -> (shdoor1=closed));
+
+LTLSPEC
+  G ((car!=2) -> (shdoor2=closed));
+
+LTLSPEC
+  G ((car!=3) -> (shdoor3=closed));
+
+LTLSPEC
+  G ((car=1) -> F(shdoor1=open & cardoor=open));
+
+LTLSPEC
+  G ((car=2) -> F(shdoor2=open & cardoor=open));
+
+LTLSPEC
+  G ((car=3) -> F(shdoor3=open & cardoor=open));
+
+LTLSPEC
+  G ((car=1 & req=1) -> F(shdoor1=open & cardoor=open));
+
+LTLSPEC
+  G ((car=2 & req=2) -> F(shdoor2=open & cardoor=open));
+
+LTLSPEC
+  G ((car=3 & req=3) -> F(shdoor3=open & cardoor=open));
+
+LTLSPEC
+  G ((carstate=moving) -> (shdoor1=closed & shdoor2=closed & shdoor3=closed));
+
+LTLSPEC
+  G ((req=1) -> F(car=1));
+
+LTLSPEC
+  G ((req=2) -> F(car=2));
+
+LTLSPEC
+  G ((req=3) -> F(car=3));
+
+LTLSPEC
+  G ((cardoor=closed) <-> (shdoor1=closed & shdoor2=closed & shdoor3=closed));
+
+LTLSPEC
+  (shdoor1=open) -> (shdoor2=closed & shdoor3=closed);
+
+LTLSPEC
+  (shdoor2=open) -> (shdoor3=closed & shdoor1=closed);
+
+LTLSPEC
+  (shdoor3=open) -> (shdoor1=closed & shdoor2=closed);

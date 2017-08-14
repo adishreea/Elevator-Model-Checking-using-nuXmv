@@ -1,0 +1,24 @@
+MODULE main
+  VAR
+    mode : {loop, stop};
+    x : 0 .. 1024;
+    y : 0 .. 1024;
+
+  DEFINE m := 3;
+  DEFINE n := 1;
+
+  TRANS
+    ((mode = loop & x >= 1) -> (next(mode) = loop & next(x) = x+(-1) & next(y) = y+n)) &
+    ((mode = loop & x = 0) -> (next(mode) = stop & next(x) = x & next(y) = y)) & 
+    ((mode = stop) -> (next(mode) = stop & next(x) = x & next(y) = y));
+  INIT
+    (mode = loop & x = m & y = 0);
+
+INVARSPEC
+  (mode = stop) -> (y = m * n);
+
+INVARSPEC
+  (x > 0) -> (mode = loop);
+
+LTLSPEC
+  G F y = m * n;
